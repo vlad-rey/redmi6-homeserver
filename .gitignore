@@ -1,0 +1,24 @@
+# Резервные копии прошивки (IMEI, калибровки)
+backup/
+*.img
+*.bin
+nvram*
+nvdata*
+persist*
+
+# Локальные данные и секреты
+*.local.*
+.env
+.env.*
+id_*
+*.pem
+*.key
+
+# Python / tools
+__pycache__/
+.venv/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
