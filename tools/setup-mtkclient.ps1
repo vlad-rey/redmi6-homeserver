@@ -1,4 +1,4 @@
-# Клонирует mtkclient в D:\Code\tools\mtkclient и создаёт окружение на Python 3.12.
+﻿# Клонирует mtkclient в D:\Code\tools\mtkclient и создаёт окружение на Python 3.12.
 # Запуск: powershell -ExecutionPolicy Bypass -File tools\setup-mtkclient.ps1
 
 $ErrorActionPreference = 'Stop'

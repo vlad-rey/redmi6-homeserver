@@ -1,4 +1,4 @@
-# Полная резервная копия разделов Redmi 6 через mtkclient (кроме userdata).
+﻿# Полная резервная копия разделов Redmi 6 через mtkclient (кроме userdata).
 # Телефон выключен. После появления "Waiting for device" зажать обе кнопки громкости и подключить USB.
 # Запуск: powershell -ExecutionPolicy Bypass -File tools\backup-partitions.ps1
 
