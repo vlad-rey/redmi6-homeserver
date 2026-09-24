@@ -45,7 +45,7 @@
    powershell -ExecutionPolicy Bypass -File D:\Code\redmi6-homeserver\tools\setup-mtkclient.ps1
    ```
    Если установка `keystone-engine` всё равно падает — поставить Visual Studio Build Tools с компонентом «Desktop development with C++» и запустить скрипт ещё раз.
-4. **Mi Unlock Tool** — скачать с официального сайта Xiaomi: [en.miui.com/unlock](https://en.miui.com/unlock/download_en.html). Распаковать, запустить `miflash_unlock.exe`, в настройках (шестерёнка) нажать «Install driver».
+4. **Mi Unlock Tool** — скачать с официального сайта Xiaomi: [unlock.update.miui.com](https://unlock.update.miui.com) (эту ссылку показывает сам телефон в «Mi Unlock status»). Распаковать, запустить `miflash_unlock.exe`, в настройках (шестерёнка) нажать «Install driver».
 5. `adb` и `fastboot` уже есть: `C:\Users\vreds\AppData\Local\Android\Sdk\platform-tools\`.
 
 ## C. Резервная копия всех разделов (сегодня)
