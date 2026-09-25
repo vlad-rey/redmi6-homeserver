@@ -11,3 +11,8 @@
 ## Репозиторий публичный
 
 - Не коммитить: резервные копии прошивки, `nvram`/`nvdata`/`persist` (там IMEI), IP/MAC-адреса, ключи SSH, пароли, `*.local.*`.
+
+## Доступ к телефону
+
+- `adb connect <IP>:5555` — IP в `device.local.json` (не в git). Root: `adb shell su -c ...`.
+- Установка APK: MIUI блокирует `adb install`; использовать `adb push` + `su -c pm install`.
