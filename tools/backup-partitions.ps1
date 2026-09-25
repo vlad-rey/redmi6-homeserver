@@ -16,7 +16,7 @@ Write-Host 'Зажмите обе кнопки громкости на выкл�
 if ($LASTEXITCODE -ne 0) { throw 'printgpt не удался' }
 
 Write-Host "`n2/2 Чтение всех разделов, кроме userdata -> $Out" -ForegroundColor Cyan
-Write-Host 'Если телефон перезагрузился: снова выключите его, зажмите обе кнопки громкости и подключите USB.' -ForegroundColor Yellow
+Write-Host 'Переподключите телефон: отключите USB, зажмите питание ~10 с (телефон выключится), затем снова зажмите обе кнопки громкости и подключите USB.' -ForegroundColor Yellow
 & $Py "$Mtk\mtk.py" rl $Out --skip userdata
 if ($LASTEXITCODE -ne 0) { throw 'rl не удался' }
 
