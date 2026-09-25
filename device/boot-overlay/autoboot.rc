@@ -1,0 +1,3 @@
+# treadmill-hub / redmi6-homeserver: загрузка в режиме зарядки (KPOC) -> через 30 с перезагрузка в Android
+on charger
+    exec_background u:r:magisk:s0 root root -- /system/bin/sh -c "sleep 30; /system/bin/reboot"
