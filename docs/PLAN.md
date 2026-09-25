@@ -36,6 +36,7 @@
 | S4 | Очистка MIUI, Termux + SSH, автозапуск | агент (ADB/SSH) | ✅ 2026-09-25: 56 пакетов удалено (обратимо), SSH :8022 по ключу, автозапуск через Magisk (MIUI сбрасывает автозапуск Termux:Boot). См. [03-cleanup-termux-ssh.md](03-cleanup-termux-ssh.md) |
 | S5 | Установка treadmill-hub как приоритетного сервиса | агент | ✅ 2026-09-25: `service.d/40-treadmill-hub.sh` запускает `HubService` от root; Bluetooth включён (`svc bluetooth enable`) |
 | S6 | Мониторинг: заряд, температура, uptime, свободная память. Предупреждения | агент | ⬜ |
+| S7 | Бэкап данных хаба на PC | агент | ✅ 2026-09-25: ежедневно 23:00, Планировщик Windows, `D:\Backups\treadmill-hub`, 90 копий. См. [04-backup.md](04-backup.md) |
 
 Подробности шагов S0–S2: [01-backup-and-unlock.md](01-backup-and-unlock.md).
 
