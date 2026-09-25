@@ -1,0 +1,71 @@
+# Пакеты, удаляемые для пользователя 0 (pm uninstall -k --user 0).
+# Системные APK остаются на месте, вернуть: cmd package install-existing <пакет>
+# Формат: пакет  # комментарий
+
+# --- Сторонние предустановки ---
+com.facebook.katana                       # Facebook (падал каждые ~30 с)
+cn.wps.xiaomi.abroad.lite                 # WPS Office Lite
+com.joom                                  # Joom
+com.mi.global.bbs                         # Mi Community
+com.miui.enbbs                            # Mi Forum
+com.micredit.in                           # Mi Credit
+com.miui.android.fashiongallery           # «Карусель обоев»
+com.google.android.inputmethod.pinyin     # Китайская клавиатура
+
+# --- Facebook, системные компоненты ---
+com.facebook.appmanager
+com.facebook.services
+com.facebook.system
+
+# --- Реклама, аналитика, телеметрия MIUI ---
+com.miui.msa.global                       # MIUI System Ads
+com.miui.analytics                        # Аналитика
+com.xiaomi.joyose                         # Телеметрия / игровой профиль
+com.miui.bugreport                        # Отчёты об ошибках
+com.miui.miservice                        # Обратная связь
+com.miui.hybrid                           # Quick Apps
+com.miui.hybrid.accessory
+com.xiaomi.discover                       # Обновления системных приложений
+com.mi.android.globalminusscreen          # App Vault (лента слева)
+com.miui.cleanmaster                      # «Очистка» с рекламой
+com.miui.yellowpage                       # Справочник номеров
+
+# --- Лишние приложения MIUI ---
+com.android.browser                       # Mi Browser
+com.miui.weather2
+com.miui.player
+com.miui.videoplayer
+com.miui.fm
+com.miui.fmservice
+com.miui.notes
+com.miui.compass
+com.miui.screenrecorder
+com.miui.touchassistant                   # Плавающий шар
+com.xiaomi.midrop                         # ShareMe
+com.xiaomi.mirecycle
+com.xiaomi.scanner
+com.mipay.wallet.id
+com.xiaomi.payment
+com.miui.vsimcore                         # Mi Roaming
+com.milink.service                        # Трансляция экрана
+com.xiaomi.miplay_client
+com.xiaomi.upnp
+
+# --- Лишние приложения Google (GMS, GSF, Play Store, Chrome остаются) ---
+com.google.android.youtube
+com.google.android.music
+com.google.android.videos
+com.google.android.apps.photos
+com.google.android.apps.maps
+com.google.android.apps.docs
+com.google.android.gm
+com.google.android.apps.tachyon           # Duo
+com.google.android.googlequicksearchbox   # Приложение Google
+com.google.android.apps.wellbeing
+com.google.android.apps.turbo
+com.google.android.feedback
+com.google.android.marvin.talkback
+
+# --- Логгеры MediaTek (пишут логи в фоне) ---
+com.mediatek.mtklogger
+com.bsp.catchlog

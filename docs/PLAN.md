@@ -33,7 +33,7 @@
 | S1 | Полная резервная копия прошивки (`mtkclient`) | владелец + агент | ✅ 2026-09-25: 40 разделов GPT (кроме `userdata`), 4,8 ГБ, размеры сверены с GPT. Хранится локально, вне git. `vbmeta` есть. Preloader (eMMC boot1) не снят — опционально |
 | S2 | Разблокировка загрузчика → Magisk → проверка root | владелец + агент | ✅ 2026-09-25: загрузчик разблокирован через Mi Unlock 7.6.727.43 без таймера; Magisk v30.7, `vbmeta` с отключённой проверкой, `su` → `uid=0`, SELinux Enforcing |
 | S3 | ADB по Wi-Fi при загрузке, ограничение заряда 40–80 % | агент (ADB) | ✅ 2026-09-25: свои скрипты `service.d` вместо ACC (ядро даёт `battery/charging_enable`). См. [02-adb-wifi-and-charge-limit.md](02-adb-wifi-and-charge-limit.md) |
-| S4 | Termux + SSH, отключение лишнего в MIUI, автозапуск, экран выключен | агент (ADB/SSH) | ⬜ |
+| S4 | Очистка MIUI, Termux + SSH, автозапуск | агент (ADB/SSH) | ✅ 2026-09-25: 56 пакетов удалено (обратимо), SSH :8022 по ключу, автозапуск через Magisk (MIUI сбрасывает автозапуск Termux:Boot). См. [03-cleanup-termux-ssh.md](03-cleanup-termux-ssh.md) |
 | S5 | Установка treadmill-hub как приоритетного сервиса | агент | ⬜ |
 | S6 | Мониторинг: заряд, температура, uptime, свободная память. Предупреждения | агент | ⬜ |
 
@@ -44,6 +44,8 @@
 - MIUI блокирует `adb install` без Mi-аккаунта («Install via USB»). Обход: `adb push` + установка через File Manager, либо после root — `su -c pm install`.
 - `adb reboot bootloader` иногда загружает Android — повторить команду.
 - `fastboot --disable-verity --disable-verification flash vbmeta` на Windows падает с `Failed to find AVB_MAGIC at offset: 0` на 8-МБ дампе раздела. Обход: обрезать дамп до 256 + auth + aux байт и выставить flags = 3 (смещение 120, big-endian), затем прошить без флагов.
+- MIUI сбрасывает разрешение автозапуска (appop `10008`) при перезагрузке — всё, что должно стартовать при загрузке, запускаем из Magisk `service.d`.
+- Один из кабелей зарядки давал помехи на 2,4 ГГц: после загрузки Wi-Fi не подключался (`status_code=16`). Кабель заменён.
 - Все бинарники для телефона (хаб, Termux-пакеты, модули) — под `armeabi-v7a`.
 
 ## Кандидаты в сервисы (после S5)

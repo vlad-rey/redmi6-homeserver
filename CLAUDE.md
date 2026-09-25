@@ -15,4 +15,5 @@
 ## Доступ к телефону
 
 - `adb connect <IP>:5555` — IP в `device.local.json` (не в git). Root: `adb shell su -c ...`.
+- SSH: `ssh redmi6` (Termux, порт 8022, ключ `~/.ssh/redmi6_ed25519`). Команды в Termux через adb: `run-as com.termux sh <скрипт>`.
 - Установка APK: MIUI блокирует `adb install`; использовать `adb push` + `su -c pm install`.
