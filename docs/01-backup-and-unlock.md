@@ -103,7 +103,7 @@
    adb reboot bootloader
    fastboot flash boot D:\Code\redmi6-homeserver\backup\patched\magisk_patched-XXXXX_XXXXX.img
    ```
-7. **Только если в копии есть `vbmeta.bin`:**
+7. **Если в копии есть `vbmeta.bin`** (у нашего Redmi 6 — есть, проверка в нём включена). Команда ниже на Windows может упасть с `Failed to find AVB_MAGIC at offset: 0` — тогда см. обход в [PLAN.md](PLAN.md) → «Особенности» (обрезанный `vbmeta_disabled.img` с flags = 3, прошивка без флагов):
    ```bash
    fastboot --disable-verity --disable-verification flash vbmeta D:\Code\redmi6-homeserver\backup\<дата>\vbmeta.bin
    ```
