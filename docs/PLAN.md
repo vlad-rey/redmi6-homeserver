@@ -34,7 +34,7 @@
 | S2 | Разблокировка загрузчика → Magisk → проверка root | владелец + агент | ✅ 2026-09-25: загрузчик разблокирован через Mi Unlock 7.6.727.43 без таймера; Magisk v30.7, `vbmeta` с отключённой проверкой, `su` → `uid=0`, SELinux Enforcing |
 | S3 | ADB по Wi-Fi при загрузке, ограничение заряда 40–80 % | агент (ADB) | ✅ 2026-09-25: свои скрипты `service.d` вместо ACC (ядро даёт `battery/charging_enable`). См. [02-adb-wifi-and-charge-limit.md](02-adb-wifi-and-charge-limit.md) |
 | S4 | Очистка MIUI, Termux + SSH, автозапуск | агент (ADB/SSH) | ✅ 2026-09-25: 56 пакетов удалено (обратимо), SSH :8022 по ключу, автозапуск через Magisk (MIUI сбрасывает автозапуск Termux:Boot). См. [03-cleanup-termux-ssh.md](03-cleanup-termux-ssh.md) |
-| S5 | Установка treadmill-hub как приоритетного сервиса | агент | ⬜ |
+| S5 | Установка treadmill-hub как приоритетного сервиса | агент | ✅ 2026-09-25: `service.d/40-treadmill-hub.sh` запускает `HubService` от root; Bluetooth включён (`svc bluetooth enable`) |
 | S6 | Мониторинг: заряд, температура, uptime, свободная память. Предупреждения | агент | ⬜ |
 
 Подробности шагов S0–S2: [01-backup-and-unlock.md](01-backup-and-unlock.md).
