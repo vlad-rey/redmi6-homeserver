@@ -6,7 +6,7 @@
 STOP=80
 START=40
 TEMP_MAX=450        # десятые доли °C
-INTERVAL=60         # секунды
+INTERVAL=30         # секунды
 
 B=/sys/class/power_supply/battery
 DIR=/data/adb/homeserver
@@ -41,9 +41,14 @@ while true; do
         want=1
     fi
 
+    status=$(cat $B/status)
     if [ "$cur" != "$want" ]; then
         echo "$want" > $B/charging_enable
         log "charging_enable $cur -> $want (cap=$cap% temp=$temp)"
+    elif [ "$want" = 0 ] && [ "$status" = "Charging" ]; then
+        # Контроллер MediaTek сам возобновляет зарядку, а флаг остаётся 0 — верим статусу, не флагу
+        echo 0 > $B/charging_enable
+        log "контроллер возобновил зарядку при флаге 0 — отключаю снова (cap=$cap%)"
     fi
 
     echo "enable=$want cap=$cap temp=$temp status=$(cat $B/status) ts=$(date +%s)" > "$STATE"

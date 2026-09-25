@@ -51,7 +51,8 @@ com.milink.service                        # Трансляция экрана
 com.xiaomi.miplay_client
 com.xiaomi.upnp
 
-# --- Лишние приложения Google (GMS, GSF, Play Store, Chrome остаются) ---
+# --- Лишние приложения Google (GMS, GSF, Chrome остаются) ---
+com.android.vending                       # Google Play Store: ~24 % CPU в фоне, серверу не нужен
 com.google.android.youtube
 com.google.android.music
 com.google.android.videos
