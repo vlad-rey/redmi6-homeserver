@@ -1,6 +1,6 @@
-﻿# Удаляет пакеты из device\debloat\packages.txt для пользователя 0 (обратимо).
-# Запуск:  powershell -ExecutionPolicy Bypass -File tools\debloat.ps1 -Serial <IP>:5555
-# Возврат: powershell -ExecutionPolicy Bypass -File tools\debloat.ps1 -Serial <IP>:5555 -Restore
+﻿# Removes packages listed in device\debloat\packages.txt for user 0 (reversible).
+# Run:     powershell -ExecutionPolicy Bypass -File tools\debloat.ps1 -Serial <IP>:5555
+# Restore: powershell -ExecutionPolicy Bypass -File tools\debloat.ps1 -Serial <IP>:5555 -Restore
 
 param([string]$Serial = '', [switch]$Restore)
 
@@ -17,7 +17,7 @@ foreach ($p in $pkgs) {
     } elseif ($present -contains $p) {
         $r = & $Adb @A shell pm uninstall -k --user 0 $p
     } else {
-        $r = 'уже удалён'
+        $r = 'already removed'
     }
     '{0,-42} {1}' -f $p, ($r -join ' ')
 }

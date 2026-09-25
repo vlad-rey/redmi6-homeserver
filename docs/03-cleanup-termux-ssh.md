@@ -1,24 +1,24 @@
-# S4. Очистка, Termux и SSH
+# S4. Cleanup, Termux and SSH
 
-## Очистка MIUI
+## MIUI cleanup
 
-Список: [`device/debloat/packages.txt`](../device/debloat/packages.txt) — 56 пакетов (реклама, аналитика, Facebook, лишние приложения MIUI и Google, логгеры MediaTek). Удаляются для пользователя 0, системные APK остаются:
+List: [`device/debloat/packages.txt`](../device/debloat/packages.txt) — 56 packages (ads, analytics, Facebook, extra MIUI and Google apps, MediaTek loggers). Removed for user 0, system APKs stay in place:
 
 ```bash
 powershell -ExecutionPolicy Bypass -File tools\debloat.ps1 -Serial <IP>:5555
 powershell -ExecutionPolicy Bypass -File tools\debloat.ps1 -Serial <IP>:5555 -Restore
 ```
 
-Восемь сторонних предустановок (Facebook, WPS, Joom и т. п.) были обычными приложениями — при `-Restore` они не вернутся, их надо ставить заново.
+Eight third-party preinstalled apps (Facebook, WPS, Joom, etc.) were regular apps — `-Restore` won't bring them back, they need to be reinstalled.
 
-Результат (2026-09-25): вылеты `com.facebook.katana` каждые ~30 с прекратились, свободно ~2,6 ГБ RAM из 3,9 ГБ.
+Result (2026-09-25): `com.facebook.katana` crashes every ~30 s stopped, ~2.6 GB RAM free out of 3.9 GB.
 
 ## Termux + SSH
 
-- Termux `v0.118.3` (`armeabi-v7a`) и Termux:Boot `v0.8.1` — сборки с GitHub (подпись должна совпадать у обоих). Установка: `adb push` + `su -c pm install`.
-- Сборка GitHub — debuggable, поэтому команды внутри Termux выполняются через `adb shell run-as com.termux sh <скрипт>` в правильном SELinux-контексте.
-- OpenSSH, порт **8022**, вход **только по ключу** (`PasswordAuthentication no`). Настройка: [`device/termux/setup-sshd.sh`](../device/termux/setup-sshd.sh).
-- На PC отдельный ключ `~/.ssh/redmi6_ed25519` и алиас в `~/.ssh/config`:
+- Termux `v0.118.3` (`armeabi-v7a`) and Termux:Boot `v0.8.1` — GitHub builds (the signature must match on both). Install via `adb push` + `su -c pm install`.
+- The GitHub build is debuggable, so commands inside Termux are run via `adb shell run-as com.termux sh <script>` to get the correct SELinux context.
+- OpenSSH, port **8022**, **key-only** login (`PasswordAuthentication no`). Setup: [`device/termux/setup-sshd.sh`](../device/termux/setup-sshd.sh).
+- A dedicated key `~/.ssh/redmi6_ed25519` on the PC and an alias in `~/.ssh/config`:
 
 ```
 Host redmi6
@@ -28,14 +28,14 @@ Host redmi6
     IdentitiesOnly yes
 ```
 
-## Автозапуск при загрузке
+## Autostart on boot
 
-MIUI **сбрасывает разрешение автозапуска** (appop `10008`) при каждой перезагрузке, и Termux:Boot получает `process is not permitted to auto start`. Поэтому скрипты `~/.termux/boot/*` запускает Magisk: [`device/service.d/30-termux-boot.sh`](../device/service.d/30-termux-boot.sh) через `RunCommandService` (`RUN_COMMAND`). Для этого в `~/.termux/termux.properties`: `allow-external-apps = true`.
+MIUI **resets the autostart permission** (appop `10008`) on every reboot, so Termux:Boot gets `process is not permitted to auto start`. Because of this, the `~/.termux/boot/*` scripts are launched by Magisk instead: [`device/service.d/30-termux-boot.sh`](../device/service.d/30-termux-boot.sh) via `RunCommandService` (`RUN_COMMAND`). This requires `allow-external-apps = true` in `~/.termux/termux.properties`.
 
-[`device/termux/boot/10-sshd.sh`](../device/termux/boot/10-sshd.sh) берёт `termux-wake-lock` и запускает `sshd`.
+[`device/termux/boot/10-sshd.sh`](../device/termux/boot/10-sshd.sh) takes a `termux-wake-lock` and starts `sshd`.
 
-Проверено перезагрузкой на зарядке: Wi-Fi через ~45 с, SSH через ~60 с, wake lock `termux:service-wakelock` удерживается.
+Verified by rebooting on charger: Wi-Fi up in ~45 s, SSH up in ~60 s, the `termux:service-wakelock` wake lock is held.
 
-## Wi-Fi и зарядка
+## Wi-Fi and charging
 
-Redmi 6 работает только в 2,4 ГГц. С одним из кабелей зарядки телефон после загрузки не мог подключиться к Wi-Fi (`ASSOC-REJECT status_code=16`) — помехи. С другим кабелем — подключается сразу. Если проблема вернётся: другой блок/кабель, блок подальше от телефона, канал 2,4 ГГц 6 или 11, ширина 20 МГц.
+The Redmi 6 only works on 2.4 GHz. With one of the charging cables, after boot the phone couldn't connect to Wi-Fi (`ASSOC-REJECT status_code=16`) — interference. With a different cable, it connects right away. If the problem comes back: try a different charger/cable, keep the charger further from the phone, use 2.4 GHz channel 6 or 11, 20 MHz width.

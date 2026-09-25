@@ -1,12 +1,12 @@
 #!/system/bin/sh
-# Ограничение заряда: при >= STOP % зарядка выключается, при <= START % включается.
-# При температуре батареи >= TEMP_MAX зарядка выключается независимо от уровня.
-# Переопределить пороги: /data/adb/homeserver/charge.conf (например, STOP=70).
+# Charge limiting: charging turns off at >= STOP%, turns on at <= START%.
+# Charging turns off regardless of level if battery temperature >= TEMP_MAX.
+# Override thresholds via: /data/adb/homeserver/charge.conf (e.g. STOP=70).
 
 STOP=80
 START=40
-TEMP_MAX=450        # десятые доли °C
-INTERVAL=30         # секунды
+TEMP_MAX=450        # tenths of a degree C
+INTERVAL=30         # seconds
 
 B=/sys/class/power_supply/battery
 DIR=/data/adb/homeserver
@@ -46,9 +46,9 @@ while true; do
         echo "$want" > $B/charging_enable
         log "charging_enable $cur -> $want (cap=$cap% temp=$temp)"
     elif [ "$want" = 0 ] && [ "$status" = "Charging" ]; then
-        # Контроллер MediaTek сам возобновляет зарядку, а флаг остаётся 0 — верим статусу, не флагу
+        # The MediaTek controller resumes charging on its own while the flag still reads 0 — trust the status, not the flag
         echo 0 > $B/charging_enable
-        log "контроллер возобновил зарядку при флаге 0 — отключаю снова (cap=$cap%)"
+        log "controller resumed charging while flag was 0 — turning it off again (cap=$cap%)"
     fi
 
     echo "enable=$want cap=$cap temp=$temp status=$(cat $B/status) ts=$(date +%s)" > "$STATE"

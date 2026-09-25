@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Запуск хаба дорожки после загрузки (MIUI не даёт приложениям автозапуск).
+# Starts the treadmill hub after boot (MIUI doesn't allow apps to autostart).
 # https://github.com/vlad-rey/treadmill-hub
 
 PKG=io.github.vladrey.treadmillhub

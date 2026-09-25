@@ -1,19 +1,19 @@
-# Правила для агентов
+# Rules for agents
 
-Репозиторий: настройка Redmi 6 как домашнего сервера. План — [docs/PLAN.md](docs/PLAN.md). Язык — русский.
+Repository: setting up a Redmi 6 as a home server. Plan — [docs/PLAN.md](docs/PLAN.md). Documentation, code comments and instructions are in English; chat with the owner is in Russian.
 
-## Осторожно
+## Caution
 
-- **Не выполнять без явного подтверждения владельца в чате**: разблокировку загрузчика, прошивку разделов (`fastboot flash`, `mtk w`), форматирование, сброс, удаление системных приложений, изменения порогов заряда (`charge.conf`) вне 30–90 %.
-- Перед любой записью в разделы — проверить, что есть свежая полная резервная копия.
-- Хаб дорожки (treadmill-hub) — приоритетный сервис. Не ставить на телефон сервисы, которые заметно нагружают CPU/память, без согласования.
+- **Do not perform without the owner's explicit confirmation in chat**: unlocking the bootloader, flashing partitions (`fastboot flash`, `mtk w`), formatting, factory reset, removing system apps, changing charge thresholds (`charge.conf`) outside 30-90%.
+- Before any write to partitions — verify there is a recent full backup.
+- The treadmill hub (treadmill-hub) is the priority service. Do not install services on the phone that noticeably load CPU/memory without prior agreement.
 
-## Репозиторий публичный
+## Repository is public
 
-- Не коммитить: резервные копии прошивки, `nvram`/`nvdata`/`persist` (там IMEI), IP/MAC-адреса, ключи SSH, пароли, `*.local.*`.
+- Do not commit: firmware backups, `nvram`/`nvdata`/`persist` (they contain the IMEI), IP/MAC addresses, SSH keys, passwords, `*.local.*`.
 
-## Доступ к телефону
+## Phone access
 
-- `adb connect <IP>:5555` — IP в `device.local.json` (не в git). Root: `adb shell su -c ...`.
-- SSH: `ssh redmi6` (Termux, порт 8022, ключ `~/.ssh/redmi6_ed25519`). Команды в Termux через adb: `run-as com.termux sh <скрипт>`.
-- Установка APK: MIUI блокирует `adb install`; использовать `adb push` + `su -c pm install`.
+- `adb connect <IP>:5555` — IP is in `device.local.json` (not in git). Root: `adb shell su -c ...`.
+- SSH: `ssh redmi6` (Termux, port 8022, key `~/.ssh/redmi6_ed25519`). Commands inside Termux via adb: `run-as com.termux sh <script>`.
+- Installing APKs: MIUI blocks `adb install`; use `adb push` + `su -c pm install`.

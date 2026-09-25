@@ -1,4 +1,4 @@
-# Резервные копии прошивки (IMEI, калибровки)
+# Firmware backups (IMEI, calibrations)
 backup/
 *.img
 *.bin
@@ -6,7 +6,7 @@ nvram*
 nvdata*
 persist*
 
-# Локальные данные и секреты
+# Local data and secrets
 *.local.*
 .env
 .env.*

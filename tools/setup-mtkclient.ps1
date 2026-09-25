@@ -1,12 +1,12 @@
-﻿# Клонирует mtkclient в D:\Code\tools\mtkclient и создаёт окружение на Python 3.12.
-# Запуск: powershell -ExecutionPolicy Bypass -File tools\setup-mtkclient.ps1
+﻿# Clones mtkclient into D:\Code\tools\mtkclient and sets up an environment on Python 3.12.
+# Run: powershell -ExecutionPolicy Bypass -File tools\setup-mtkclient.ps1
 
 $ErrorActionPreference = 'Stop'
 $Dir = 'D:\Code\tools\mtkclient'
 
 & py -3.12 --version
 if ($LASTEXITCODE -ne 0) {
-    throw 'Python 3.12 не найден. Установите: winget install Python.Python.3.12'
+    throw 'Python 3.12 not found. Install with: winget install Python.Python.3.12'
 }
 
 if (Test-Path $Dir) {
@@ -23,8 +23,8 @@ if (-not (Test-Path "$Dir\.venv")) {
 & "$Dir\.venv\Scripts\python.exe" -m pip install --upgrade pip
 & "$Dir\.venv\Scripts\python.exe" -m pip install -r "$Dir\requirements.txt"
 if ($LASTEXITCODE -ne 0) {
-    throw 'Не удалось установить зависимости. См. docs\01-backup-and-unlock.md, часть B.'
+    throw 'Failed to install dependencies. See docs\01-backup-and-unlock.md, part B.'
 }
 
 & "$Dir\.venv\Scripts\python.exe" "$Dir\mtk.py" -h | Select-Object -First 5
-Write-Host "`nmtkclient готов: $Dir" -ForegroundColor Green
+Write-Host "`nmtkclient ready: $Dir" -ForegroundColor Green

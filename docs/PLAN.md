@@ -1,67 +1,67 @@
-# План: Redmi 6 как домашний сервер
+# Plan: Redmi 6 as a home server
 
-Последнее обновление: 2026-09-24.
+Last updated: 2026-09-24.
 
-## Устройство
+## Device
 
-| Параметр | Значение |
+| Parameter | Value |
 |---|---|
-| Модель | Xiaomi Redmi 6, 4/64 ГБ |
-| Кодовое имя | `cereus` |
-| SoC | MediaTek Helio P22 (MT6762), 8× Cortex-A53 |
-| ABI | **32-битный Android**: `armeabi-v7a`, ядро `armv7l` (процессор 64-битный, но система собрана под 32 бита) |
-| MIUI / Android | MIUI Global 11.0.4.0 (PCGMIXM) Stable / Android 9 (API 28), патч безопасности 2020-05-01 |
-| Загрузчик / root | **разблокирован** / **Magisk v30.7** (2026-09-25). BROM доступен: SBC/SLA/DAA включены, но `mtkclient` обходит их (Kamakiri) — запасной путь разблокировки без ожидания |
+| Model | Xiaomi Redmi 6, 4/64 GB |
+| Codename | `cereus` |
+| SoC | MediaTek Helio P22 (MT6762), 8x Cortex-A53 |
+| ABI | **32-bit Android**: `armeabi-v7a`, kernel `armv7l` (the processor is 64-bit, but the system is built for 32-bit) |
+| MIUI / Android | MIUI Global 11.0.4.0 (PCGMIXM) Stable / Android 9 (API 28), security patch 2020-05-01 |
+| Bootloader / root | **unlocked** / **Magisk v30.7** (2026-09-25). BROM is accessible: SBC/SLA/DAA are enabled, but `mtkclient` bypasses them (Kamakiri) — a fallback unlock path with no waiting |
 
-Производительность — примерно уровень Raspberry Pi 3. Подходит для лёгких сервисов. Home Assistant, Docker и тяжёлые БД — нет.
+Performance is roughly on par with a Raspberry Pi 3. Suitable for lightweight services. Home Assistant, Docker and heavy databases — no.
 
-## Решения
+## Decisions
 
-| # | Решение |
+| # | Decision |
 |---|---|
-| 1 | Прошивка: стоковая MIUI + Magisk. Неофициальный LineageOS — только если MIUI будет мешать (риск для Bluetooth) |
-| 2 | Питание: ограничение заряда 40–80 % собственным скриптом через `battery/charging_enable` (ACC не понадобился). Умная розетка не нужна |
-| 3 | Перед любыми операциями с прошивкой — полная резервная копия всех разделов через `mtkclient` |
-| 4 | Хаб дорожки — приоритетный сервис. Остальные сервисы ограничены по ресурсам |
-| 5 | Доступ только из домашней сети. Постоянный IP через резервирование DHCP в роутере |
+| 1 | Firmware: stock MIUI + Magisk. Unofficial LineageOS — only if MIUI gets in the way (Bluetooth risk) |
+| 2 | Power: 40-80% charge limit via our own script through `battery/charging_enable` (ACC wasn't needed). No smart plug needed |
+| 3 | Before any firmware operations — a full backup of all partitions via `mtkclient` |
+| 4 | The treadmill hub is the priority service. Other services are resource-limited |
+| 5 | Access only from the home network. Static IP via DHCP reservation on the router |
 
-## Шаги
+## Steps
 
-| # | Шаг | Кто | Статус |
+| # | Step | Who | Status |
 |---|---|---|---|
-| S0 | Узнать версию MIUI/Android. Привязать Mi-аккаунт для разблокировки | владелец | ✅ 2026-09-24: аккаунт привязан |
-| S1 | Полная резервная копия прошивки (`mtkclient`) | владелец + агент | ✅ 2026-09-25: 40 разделов GPT (кроме `userdata`), 4,8 ГБ, размеры сверены с GPT. Хранится локально, вне git. `vbmeta` есть. Preloader (eMMC boot1) не снят — опционально |
-| S2 | Разблокировка загрузчика → Magisk → проверка root | владелец + агент | ✅ 2026-09-25: загрузчик разблокирован через Mi Unlock 7.6.727.43 без таймера; Magisk v30.7, `vbmeta` с отключённой проверкой, `su` → `uid=0`, SELinux Enforcing |
-| S3 | ADB по Wi-Fi при загрузке, ограничение заряда 40–80 % | агент (ADB) | ✅ 2026-09-25: свои скрипты `service.d` вместо ACC (ядро даёт `battery/charging_enable`). См. [02-adb-wifi-and-charge-limit.md](02-adb-wifi-and-charge-limit.md) |
-| S4 | Очистка MIUI, Termux + SSH, автозапуск | агент (ADB/SSH) | ✅ 2026-09-25: 56 пакетов удалено (обратимо), SSH :8022 по ключу, автозапуск через Magisk (MIUI сбрасывает автозапуск Termux:Boot). См. [03-cleanup-termux-ssh.md](03-cleanup-termux-ssh.md) |
-| S5 | Установка treadmill-hub как приоритетного сервиса | агент | ✅ 2026-09-25: `service.d/40-treadmill-hub.sh` запускает `HubService` от root; Bluetooth включён (`svc bluetooth enable`) |
-| S6 | Мониторинг: заряд, температура, uptime, свободная память. Предупреждения | агент | ⬜ |
-| S8 | Энергосбережение и автовключение после разряда | агент | ✅ 2026-09-25: ~60 мА в простое; автозагрузка из режима зарядки через `overlay.d` в `boot` (проверено: 91 с). См. [05-power-and-autoboot.md](05-power-and-autoboot.md) |
-| S7 | Бэкап данных хаба на PC | агент | ✅ 2026-09-25: ежедневно 23:00, Планировщик Windows, `D:\Backups\treadmill-hub`, 90 копий. См. [04-backup.md](04-backup.md) |
+| S0 | Find out the MIUI/Android version. Link the Mi account for unlocking | owner | ✅ 2026-09-24: account linked |
+| S1 | Full firmware backup (`mtkclient`) | owner + agent | ✅ 2026-09-25: 40 GPT partitions (except `userdata`), 4.8 GB, sizes verified against the GPT. Stored locally, outside git. `vbmeta` is present. Preloader (eMMC boot1) not dumped — optional |
+| S2 | Bootloader unlock → Magisk → root check | owner + agent | ✅ 2026-09-25: bootloader unlocked via Mi Unlock 7.6.727.43 with no timer; Magisk v30.7, `vbmeta` with verification disabled, `su` → `uid=0`, SELinux Enforcing |
+| S3 | ADB over Wi-Fi on boot, 40-80% charge limit | agent (ADB) | ✅ 2026-09-25: custom `service.d` scripts instead of ACC (the kernel exposes `battery/charging_enable`). See [02-adb-wifi-and-charge-limit.md](02-adb-wifi-and-charge-limit.md) |
+| S4 | MIUI cleanup, Termux + SSH, autostart | agent (ADB/SSH) | ✅ 2026-09-25: 56 packages removed (reversible), SSH :8022 by key, autostart via Magisk (MIUI resets Termux:Boot's autostart permission). See [03-cleanup-termux-ssh.md](03-cleanup-termux-ssh.md) |
+| S5 | Install treadmill-hub as the priority service | agent | ✅ 2026-09-25: `service.d/40-treadmill-hub.sh` starts `HubService` as root; Bluetooth enabled (`svc bluetooth enable`) |
+| S6 | Monitoring: charge, temperature, uptime, free memory. Alerts | agent | ⬜ |
+| S8 | Power saving and auto-boot after full discharge | agent | ✅ 2026-09-25: ~60 mA idle; auto-boot from charging mode via `overlay.d` in `boot` (verified: 91 s). See [05-power-and-autoboot.md](05-power-and-autoboot.md) |
+| S7 | Hub data backup to PC | agent | ✅ 2026-09-25: daily at 23:00, Windows Task Scheduler, `D:\Backups\treadmill-hub`, 90 copies kept. See [04-backup.md](04-backup.md) |
 
-Подробности шагов S0–S2: [01-backup-and-unlock.md](01-backup-and-unlock.md).
+Details for steps S0-S2: [01-backup-and-unlock.md](01-backup-and-unlock.md).
 
-## Особенности, выясненные на практике
+## Notes discovered in practice
 
-- MIUI блокирует `adb install` без Mi-аккаунта («Install via USB»). Обход: `adb push` + установка через File Manager, либо после root — `su -c pm install`.
-- `adb reboot bootloader` иногда загружает Android — повторить команду.
-- `fastboot --disable-verity --disable-verification flash vbmeta` на Windows падает с `Failed to find AVB_MAGIC at offset: 0` на 8-МБ дампе раздела. Обход: обрезать дамп до 256 + auth + aux байт и выставить flags = 3 (смещение 120, big-endian), затем прошить без флагов.
-- MIUI сбрасывает разрешение автозапуска (appop `10008`) при перезагрузке — всё, что должно стартовать при загрузке, запускаем из Magisk `service.d`.
-- Один из кабелей зарядки давал помехи на 2,4 ГГц: после загрузки Wi-Fi не подключался (`status_code=16`). Кабель заменён.
-- Раздел `boot` из Android не записывается (защита eMMC) — прошивка только через fastboot по USB.
-- Все бинарники для телефона (хаб, Termux-пакеты, модули) — под `armeabi-v7a`.
+- MIUI blocks `adb install` without a Mi account ("Install via USB"). Workaround: `adb push` + install via File Manager, or after root — `su -c pm install`.
+- `adb reboot bootloader` sometimes boots into Android instead — repeat the command.
+- `fastboot --disable-verity --disable-verification flash vbmeta` on Windows fails with `Failed to find AVB_MAGIC at offset: 0` on an 8 MB partition dump. Workaround: truncate the dump to 256 bytes + auth + aux bytes and set flags = 3 (offset 120, big-endian), then flash without flags.
+- MIUI resets the autostart permission (appop `10008`) on reboot — anything that needs to start at boot is launched from Magisk's `service.d` instead.
+- One of the charging cables caused 2.4 GHz interference: after boot, Wi-Fi wouldn't connect (`status_code=16`). Cable replaced.
+- The `boot` partition can't be written from Android (eMMC protection) — flashing only works via fastboot over USB.
+- All binaries for the phone (hub, Termux packages, modules) are `armeabi-v7a`.
 
-## Кандидаты в сервисы (после S5)
+## Candidate services (after S5)
 
-Решаются отдельно, по одному:
+To be decided separately, one at a time:
 
-- AdGuard Home (блокировка рекламы в домашней сети).
-- Syncthing (синхронизация/бэкап файлов).
-- Телеграм-бот (уведомления хаба).
-- Бэкап истории тренировок на PC.
+- AdGuard Home (ad blocking on the home network).
+- Syncthing (file sync/backup).
+- Telegram bot (hub notifications).
+- Backing up workout history to PC.
 
-## Открытые вопросы
+## Open questions
 
-- [x] Версия MIUI/Android: MIUI Global 11.0.4.0 (PCGMIXM), Android 9. Остаёмся на ней, обновления отключены (иначе резервная копия `boot` не подойдёт для Magisk).
-- [x] Управление зарядкой на ядре MT6762: `/sys/class/power_supply/battery/charging_enable` работает.
-- [x] После полного разряда телефон сам загружается при появлении питания (правило `overlay.d`, 2026-09-25).
+- [x] MIUI/Android version: MIUI Global 11.0.4.0 (PCGMIXM), Android 9. Staying on it, updates disabled (otherwise the `boot` backup would no longer match for Magisk).
+- [x] Charge control on the MT6762 kernel: `/sys/class/power_supply/battery/charging_enable` works.
+- [x] After a full discharge, the phone boots itself once power is restored (`overlay.d` rule, 2026-09-25).

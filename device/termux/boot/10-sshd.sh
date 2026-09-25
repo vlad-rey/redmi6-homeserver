@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/sh
-# Termux:Boot: запускается после загрузки телефона.
-# wake lock не даёт Android усыплять процессоры, пока работает сервер.
+# Termux:Boot: runs after the phone boots.
+# The wake lock keeps Android from suspending the CPU while the server is running.
 termux-wake-lock
 sshd

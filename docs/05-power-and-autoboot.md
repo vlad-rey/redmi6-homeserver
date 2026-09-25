@@ -1,39 +1,39 @@
-# Энергопотребление и автовключение
+# Power consumption and auto-boot
 
-## Экономия (2026-09-25)
+## Power saving (2026-09-25)
 
-Скрипт [`device/power/power-saving.sh`](../device/power/power-saving.sh), запуск один раз от root (настройки сохраняются):
+Script [`device/power/power-saving.sh`](../device/power/power-saving.sh), run once as root (settings persist):
 
-- режим полёта **только для сотовой связи** (`airplane_mode_radios=cell`) — Wi-Fi и Bluetooth работают; если Wi-Fi после включения не поднялся за 20 с, режим полёта откатывается;
-- экран гаснет через 15 с, минимальная яркость;
-- фоновые сканирования Wi-Fi/Bluetooth и геолокация выключены (адрес дорожки известен);
-- Google Play Store удалён для пользователя 0 (в фоне занимал ~24 % CPU), см. `device/debloat/packages.txt`.
+- airplane mode **for cellular only** (`airplane_mode_radios=cell`) — Wi-Fi and Bluetooth keep working; if Wi-Fi doesn't come back up within 20 s after enabling it, airplane mode is rolled back;
+- screen turns off after 15 s, minimum brightness;
+- background Wi-Fi/Bluetooth scanning and location are disabled (the treadmill's location is already known);
+- Google Play Store removed for user 0 (it used ~24% CPU in the background), see `device/debloat/packages.txt`.
 
-Замер потребления при остановленной зарядке и выключенном экране: **≈ 57–63 мА** (~0,2 Вт). Хаб ≈ 8 % одного ядра. Wake lock процессора и Wi-Fi high-perf оставлены: без high-perf скорость Wi-Fi падала до ~70 КБ/с при той же потребляемой мощности.
+Power draw measured with charging stopped and the screen off: **≈ 57-63 mA** (~0.2 W). The hub uses ≈ 8% of one core. CPU wake lock and Wi-Fi high-perf mode are left on: without high-perf, Wi-Fi speed dropped to ~70 KB/s at the same power draw.
 
-### Ограничитель заряда
+### Charge limiter
 
-Контроллер MediaTek сам возобновляет зарядку, а флаг `charging_enable` продолжает показывать `0`. Поэтому [`20-charge-limit.sh`](../device/service.d/20-charge-limit.sh) ориентируется на фактический `status` (`Charging`) и при необходимости пишет `0` снова; проверка каждые 30 с.
+The MediaTek controller resumes charging on its own, while the `charging_enable` flag still reads `0`. Because of this, [`20-charge-limit.sh`](../device/service.d/20-charge-limit.sh) checks the actual `status` (`Charging`) and writes `0` again if needed; checked every 30 s.
 
-## Автовключение после полного разряда
+## Auto-boot after a full discharge
 
-Когда батарея села, а питание вернулось, MediaTek грузится в режим «зарядка при выключенном питании» (KPOC, `ro.bootmode=charger`). Скрипты Magisk (`post-fs-data.d`, `service.d`) в этом режиме **не выполняются** — проверено.
+When the battery dies and power returns, MediaTek boots into "charging while powered off" mode (KPOC, `ro.bootmode=charger`). Magisk scripts (`post-fs-data.d`, `service.d`) **do not run** in this mode — verified.
 
-Решение — правило init в ramdisk через штатный механизм Magisk `overlay.d` ([`device/boot-overlay/autoboot.rc`](../device/boot-overlay/autoboot.rc)):
+The solution is an init rule in the ramdisk, added via Magisk's standard `overlay.d` mechanism ([`device/boot-overlay/autoboot.rc`](../device/boot-overlay/autoboot.rc)):
 
 ```
 on charger
     exec_background u:r:magisk:s0 root root -- /system/bin/sh -c "sleep 30; /system/bin/reboot"
 ```
 
-Проверено 2026-09-25: `reboot -p` при подключённом питании → через **91 с** Android загрузился сам.
+Verified 2026-09-25: `reboot -p` with power connected → Android booted itself after **91 s**.
 
-### Как собрано и прошито
+### How it was built and flashed
 
-1. Текущий `boot` (с Magisk) снят с телефона: `dd if=/dev/block/by-name/boot`.
+1. The current `boot` (with Magisk) was pulled from the phone: `dd if=/dev/block/by-name/boot`.
 2. `magiskboot unpack` → `magiskboot cpio ramdisk.cpio "mkdir 0750 overlay.d" "add 0644 overlay.d/autoboot.rc autoboot.rc"` → `magiskboot repack`.
-3. **Раздел `boot` из Android не записывается** (`dd` возвращает успех, но данные не меняются — защита eMMC). Прошивка — только из fastboot по USB: `fastboot flash boot boot-magisk-autoboot.img`.
+3. **The `boot` partition can't be written from Android** (`dd` reports success, but nothing actually changes — eMMC protection). Flashing only works via fastboot over USB: `fastboot flash boot boot-magisk-autoboot.img`.
 
-Образы (не в git): `backup/patched/boot-magisk-autoboot.img` (текущий, SHA-1 `aa05a01a…`), `backup/patched/magisk_patched-30700_YhUGg.img` (Magisk без автовключения), `backup/<дата>/boot.bin` (стоковый).
+Images (not in git): `backup/patched/boot-magisk-autoboot.img` (current, SHA-1 `aa05a01a…`), `backup/patched/magisk_patched-30700_YhUGg.img` (Magisk without auto-boot), `backup/<date>/boot.bin` (stock).
 
-⚠️ Переустановка/обновление Magisk через приложение перепатчит `boot` из стокового образа — правило `overlay.d` пропадёт, его нужно добавить заново по шагам выше.
+⚠️ Reinstalling/updating Magisk via the app will re-patch `boot` from the stock image — the `overlay.d` rule will be lost and needs to be added again following the steps above.

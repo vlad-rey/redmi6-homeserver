@@ -1,8 +1,8 @@
 #!/system/bin/sh
-# Запускает скрипты ~/.termux/boot/* после загрузки.
-# Termux:Boot сам этого сделать не может: MIUI сбрасывает ему разрешение автозапуска
-# ("process is not permitted to auto start"). Запуск от root через RUN_COMMAND MIUI не блокирует.
-# Требует allow-external-apps = true в ~/.termux/termux.properties.
+# Runs the ~/.termux/boot/* scripts after boot.
+# Termux:Boot can't do this on its own: MIUI resets its autostart permission
+# ("process is not permitted to auto start"). MIUI doesn't block launching as root via RUN_COMMAND.
+# Requires allow-external-apps = true in ~/.termux/termux.properties.
 
 BOOT=/data/data/com.termux/files/home/.termux/boot
 

@@ -1,6 +1,6 @@
 #!/system/bin/sh
-# ADB по Wi-Fi (порт 5555) при каждой загрузке.
-# Доступ по-прежнему только для компьютеров с разрешённым RSA-ключом.
+# ADB over Wi-Fi (port 5555) on every boot.
+# Access is still restricted to computers with an authorized RSA key.
 
 PORT=5555
 
