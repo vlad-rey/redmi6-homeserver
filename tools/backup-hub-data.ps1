@@ -37,6 +37,9 @@ try {
     $sessions = @($list | Where-Object { $_ -match '^files/sessions/\d+\.json$' }).Count
     Log ("OK {0} — {1:N1} КБ, тренировок: {2}" -f $name, ((Get-Item $target).Length / 1KB), $sessions)
 
+    # Отметка на хабе: вкладка «Хаб» показывает время последнего бэкапа
+    curl.exe -s -m 5 -X POST "http://$($Serial.Split(':')[0]):8080/api/hub/backup" | Out-Null
+
     # Храним последние $Keep архивов
     Get-ChildItem $Dest -Filter 'treadmill-hub-*.tgz' | Sort-Object Name -Descending | Select-Object -Skip $Keep | Remove-Item
 }
